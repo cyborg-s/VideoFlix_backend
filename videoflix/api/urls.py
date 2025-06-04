@@ -1,8 +1,10 @@
-# videoflix/urls.py
+# videoflix/api/urls.py
 from django.urls import path
-from . import views
+from .views import VideoUploadView, VideoListView, VideoDetailView,VideoProgressUpdateView
 
 urlpatterns = [
-    path('', views.video_list, name='video-list'),  # z. B. /video/
-    path('<int:id>/', views.video_detail, name='video-detail'),  # z. B. /video/3/
+    path('upload/', VideoUploadView.as_view(), name='video-upload'),
+    path('videos/', VideoListView.as_view(), name='video-list'),
+    path('video/<int:pk>/', VideoDetailView.as_view(), name='video-detail'),
+    path('video/progress/', VideoProgressUpdateView.as_view(), name='video-progress'),
 ]

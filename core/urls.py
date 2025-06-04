@@ -16,7 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 urlpatterns = [
@@ -25,5 +26,10 @@ urlpatterns = [
     path('api/login/', include('login.api.urls')),
     path('api/video/', include('videoflix.api.urls')),
     path('api/password-reset/', include('password_reset.api.urls')),
+    path('api/videoflix/', include('videoflix.api.urls')),
+    path('django-rq/', include('django_rq.urls')),
 ]
 
+
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
