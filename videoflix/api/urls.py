@@ -8,3 +8,4 @@ urlpatterns = [
     path('video/<int:pk>/', VideoDetailView.as_view(), name='video-detail'),
     path('video/progress/', VideoProgressUpdateView.as_view(), name='video-progress'),
 ]
+ 

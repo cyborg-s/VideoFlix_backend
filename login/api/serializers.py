@@ -16,10 +16,11 @@ class LoginSerializer(serializers.Serializer):
         except User.DoesNotExist:
             raise serializers.ValidationError("Invalid credentials.")
 
-        user = authenticate(username=user_obj.username, password=password)
-        if not user:
+        if not user_obj.check_password(password):
             raise serializers.ValidationError("Invalid credentials.")
-        if not user.is_active:
+
+        if not user_obj.is_active:
             raise serializers.ValidationError("Email not confirmed.")
-        data['user'] = user
+
+        data['user'] = user_obj
         return data
