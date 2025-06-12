@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('registration.api.urls')),
     path('api/login/', include('login.api.urls')),
+    path('api/validate-token/', include('user.api.urls')),
     path('api/video/', include('videoflix.api.urls')),
     path('api/password-reset/', include('password_reset.api.urls')),
     path('api/videoflix/', include('videoflix.api.urls')),

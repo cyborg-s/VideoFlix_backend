@@ -3,10 +3,10 @@ from django.conf import settings
 
 class Video(models.Model):
     title = models.CharField(max_length=255)
-    description = models.TextField(max_length=255)
+    description = models.TextField()
     original_file = models.FileField(upload_to='videos/original/', max_length=255)
     thumbnail = models.ImageField(upload_to='videos/thumbnails/', max_length=255)
-    created_at = models.DateTimeField(auto_now_add=True, max_length=255)
+
 
     video_180p = models.FileField(upload_to='videos/180p/', null=True, blank=True, max_length=255)
     video_360p = models.FileField(upload_to='videos/360p/', null=True, blank=True, max_length=255)

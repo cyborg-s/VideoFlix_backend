@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from corsheaders.defaults import default_headers
 
 load_dotenv()
 
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
     'django_rq',
     'videoflix.apps.VideoflixConfig',
@@ -53,6 +55,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -178,4 +182,14 @@ if DEBUG:
     EMAIL_USE_TLS = False
     EMAIL_USE_SSL = False
     DEFAULT_FROM_EMAIL = 'test@example.com'
-    FRONTEND_URL = "http://localhost:8000"
+    FRONTEND_URL = "http://localhost:4200"
+
+
+    CORS_ALLOWED_ORIGINS = [
+    "http://localhost:4200",
+    "http://127.0.0.1:5500"
+]
+    
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "content-type",
+]
