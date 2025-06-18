@@ -20,7 +20,7 @@ class UserModelTests(TestCase):
         # username wird automatisch aus Email gesetzt
         email = 'myuser@example.com'
         user = User.objects.create_user(email=email, password='pass')
-        self.assertEqual(user.username, 'myuser')
+        self.assertEqual(user.username, 'myuser__at__example.com')
 
     def test_create_user_without_email_raises_error(self):
         with self.assertRaises(ValueError):

@@ -11,7 +11,7 @@ class UserManager(BaseUserManager):
 
         # Wenn kein username übergeben wurde, setze einen automatisch (z.B. aus email oder uuid)
         if not username:
-            username = email.split('@')[0]  # oder z.B. str(uuid.uuid4())[:30]
+            username = email.replace('@', '__at__')  # oder z.B. str(uuid.uuid4())[:30]
 
         user = self.model(email=email, username=username, **extra_fields)
         user.set_password(password)
@@ -29,7 +29,7 @@ class UserManager(BaseUserManager):
             raise ValueError('Superuser must have is_superuser=True.')
 
         if not username:
-            username = email.split('@')[0]
+            username = email.replace('@', '__at__')
 
         return self.create_user(email, username=username, password=password, **extra_fields)
 

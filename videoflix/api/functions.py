@@ -6,6 +6,7 @@ import uuid
 from moviepy import VideoFileClip
 from ..models import VideoProgress
 
+
 def convert_video(input_path, output_path, resolution):
     height = resolution
     command = [
@@ -16,8 +17,10 @@ def convert_video(input_path, output_path, resolution):
         "-crf", "23",
         "-preset", "fast",
         "-c:a", "aac",
+        "-movflags", "+faststart",  # <<<<<< HIER HINZUGEFÜGT
         output_path,
     ]
+
     subprocess.run(command, check=True)
 
 def generate_thumbnail(input_path, output_path):
@@ -28,15 +31,14 @@ def generate_thumbnail(input_path, output_path):
 
 
 
-def get_video_by_resolution(video, resolution):
-    resolution_field_map = {
+def get_video_by_resolution(video, resolution: str):
+    resolution_map = {
         '180p': video.video_180p,
         '360p': video.video_360p,
         '720p': video.video_720p,
         '1080p': video.video_1080p,
     }
-    return resolution_field_map.get(resolution)
-
+    return resolution_map.get(resolution)
 
 
 

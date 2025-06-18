@@ -228,4 +228,4 @@ class VideoTestCase(TestCase):
         url = reverse('video-progress')
         data = {'video_id': 1, 'position_in_seconds': 50}
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)  # korrigiert von 401 auf 403
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN) 

@@ -6,6 +6,7 @@ from rest_framework.authtoken.models import Token
 
 User = get_user_model()
 
+
 class LoginTests(APITestCase):
     def setUp(self):
         # Erstelle einen aktiven User
@@ -15,7 +16,8 @@ class LoginTests(APITestCase):
             username='testuser',
             is_active=True
         )
-        self.login_url = reverse('login')
+        self.login_url = reverse('login:login')
+        print("Login URL is:", self.login_url)
 
         # User der nicht aktiv ist
         self.inactive_user = User.objects.create_user(
@@ -48,7 +50,8 @@ class LoginTests(APITestCase):
         }
         response = self.client.post(self.login_url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('non_field_errors', response.data)  # oder Fehlerkey je nach Serializer
+        # oder Fehlerkey je nach Serializer
+        self.assertIn('non_field_errors', response.data)
         self.assertIn('Invalid credentials', str(response.data))
 
     def test_login_invalid_email(self):
@@ -69,7 +72,5 @@ class LoginTests(APITestCase):
         response = self.client.post(self.login_url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-        # Alle Fehlertexte als String sammeln
-        errors_as_str = str(response.data)
-
-        self.assertIn('Email not confirmed', errors_as_str)
+        self.assertIn('non_field_errors', response.data)
+        self.assertIn('Email not confirmed.', response.data['non_field_errors'])

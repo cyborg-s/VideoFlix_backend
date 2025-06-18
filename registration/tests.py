@@ -42,7 +42,7 @@ class RegistrationActivationTests(TestCase):
         }
         response = self.client.post(self.register_url, data)
         self.assertEqual(response.status_code, 400)
-        self.assertIn("password", response.data)
+        self.assertIn("Bitte überprüfe deine Eingaben und versuche es erneut.", response.data)
 
     def test_register_missing_email(self):
         data = {
@@ -51,7 +51,7 @@ class RegistrationActivationTests(TestCase):
         }
         response = self.client.post(self.register_url, data)
         self.assertEqual(response.status_code, 400)
-        self.assertIn("email", response.data)
+        self.assertIn("Bitte überprüfe deine Eingaben und versuche es erneut.", response.data)
 
     def test_register_username_is_read_only(self):
         data = {
@@ -94,7 +94,7 @@ class RegistrationActivationTests(TestCase):
         activate_url = reverse('activate', kwargs={'uidb64': uid, 'token': token})
         response = self.client.get(activate_url)
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Account already activated", response.data["message"])
+        self.assertIn("Bitte überprüfe deine Eingaben und versuche es erneut.", response.data["message"])
 
     def test_activate_account_invalid_uid(self):
         activate_url = reverse('activate', kwargs={'uidb64': 'invaliduid', 'token': 'sometoken'})

@@ -6,10 +6,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import RegisterSerializer
 from .functions import send_activation_email
+from rest_framework.permissions import AllowAny
 
 User = get_user_model()
 
 class RegisterView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
@@ -19,9 +21,10 @@ class RegisterView(APIView):
             {"message": "Please confirm your email address."},
             status=status.HTTP_201_CREATED
             )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response("Bitte überprüfe deine Eingaben und versuche es erneut.", status=status.HTTP_400_BAD_REQUEST)
 
 class ActivateAccountView(APIView):
+    permission_classes = [AllowAny]
     def get(self, request, uidb64, token):
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
@@ -31,7 +34,7 @@ class ActivateAccountView(APIView):
 
         if user is not None and default_token_generator.check_token(user, token):
             if user.is_active:
-                return Response({"message": "Account already activated."}, status=status.HTTP_200_OK)
+                return Response({"message": "Bitte überprüfe deine Eingaben und versuche es erneut."}, status=status.HTTP_200_OK)
             user.is_active = True
             user.save()
             return Response({"message": "Account activated successfully!"}, status=status.HTTP_200_OK)

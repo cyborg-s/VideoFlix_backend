@@ -8,20 +8,19 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        print(data)
         email = data.get('email')
         password = data.get('password')
 
         try:
             user_obj = User.objects.get(email=email)
         except User.DoesNotExist:
-            raise serializers.ValidationError("Invalid credentials.")
+            raise serializers.ValidationError({'non_field_errors': ["Invalid credentials."]})
 
         if not user_obj.check_password(password):
-            raise serializers.ValidationError("Invalid credentials.")
+            raise serializers.ValidationError({'non_field_errors': ["Invalid credentials."]})
 
         if not user_obj.is_active:
-            raise serializers.ValidationError("Email not confirmed.")
+            raise serializers.ValidationError({'non_field_errors': ["Email not confirmed."]})
 
         data['user'] = user_obj
         return data
