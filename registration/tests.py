@@ -16,7 +16,7 @@ class RegistrationActivationTests(TestCase):
         self.client = APIClient()
         self.register_url = reverse('register')
 
-    @patch('registration.api.functions.send_mail')  # Patch send_mail, damit kein echter Mailversand stattfindet
+    @patch('registration.api.functions.EmailMultiAlternatives.send')  # Patch send_mail, damit kein echter Mailversand stattfindet
     def test_register_user_success(self, mock_send_mail):
         data = {
             "email": "testuser@example.com",

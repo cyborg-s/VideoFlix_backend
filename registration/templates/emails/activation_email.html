@@ -1,0 +1,42 @@
+<!-- templates/emails/activation_email.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Account Activation</title>
+  </head>
+  <body>
+    <p>Dear {{ username_clean }},</p>
+    <p>
+      Thank you for registering with <a href="http://localhost:4200/">Videoflix</a>. To complete your
+      registration and verify your email address, please click the link below:
+    </p>
+    <p>
+      <a
+        href="{{ activation_link }}"
+        target="_blank"
+        style="
+          background-color: #2e3edf;
+          width: 200px;
+          text-align: center;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-block: auto;
+          height: 48px;
+          color: white;
+          text-decoration: none;
+          border-radius: 40px;
+          font-size: 16px;
+        "
+      >
+        Activate account
+      </a>
+    </p>
+
+    <p>
+      If you did not create an account with us, please disregard this email.
+    </p>
+    <p>Best regards,<br /><br />Your Videoflix Team.</p>
+  </body>
+</html>

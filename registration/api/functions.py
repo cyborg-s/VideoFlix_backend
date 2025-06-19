@@ -1,4 +1,5 @@
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
@@ -11,10 +12,20 @@ def send_activation_email(user, request):
     domain = get_current_site(request).domain
     activation_link = f"http://{domain}" + reverse("activate", kwargs={"uidb64": uid, "token": token})
 
-    send_mail(
-        subject="Activate your account",
-        message=f"Click to activate your account:\n\n{activation_link}",
-        from_email="noreply@videoflix.com",
-        recipient_list=[user.email],
-        fail_silently=False,
-    )
+    subject = "Aktiviere dein VideoFlix-Konto"
+    from_email = "noreply@videoflix.com"
+    to = [user.email]
+
+    context = {
+    "user": user,
+    "activation_link": activation_link,
+    "username_clean": user.username.split("_")[0],
+}
+
+    text_content = f"Bitte klicke auf den folgenden Link zur Aktivierung:\n\n{activation_link}"
+    html_content = render_to_string("emails/activation_email.html", context)
+
+    msg = EmailMultiAlternatives(subject, text_content, from_email, to)
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
+ 

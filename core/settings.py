@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'videoflix.apps.VideoflixConfig',
     'rest_framework.authtoken',
     'user',
+    'registration'
 ]
 
 MIDDLEWARE = [
