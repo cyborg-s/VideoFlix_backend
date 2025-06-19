@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 
 User = get_user_model()
 
+
 class UserModelTests(TestCase):
 
     def test_create_user_successful(self):
@@ -14,10 +15,9 @@ class UserModelTests(TestCase):
         self.assertTrue(user.check_password(password))
         self.assertFalse(user.is_staff)
         self.assertFalse(user.is_superuser)
-        self.assertFalse(user.is_active)  # Default laut deinem Model
+        self.assertFalse(user.is_active)
 
     def test_create_user_username_auto_set(self):
-        # username wird automatisch aus Email gesetzt
         email = 'myuser@example.com'
         user = User.objects.create_user(email=email, password='pass')
         self.assertEqual(user.username, 'myuser__at__example.com')
@@ -38,30 +38,30 @@ class UserModelTests(TestCase):
 
     def test_create_superuser_without_is_staff_raises_error(self):
         with self.assertRaises(ValueError):
-            User.objects.create_superuser(email='admin@example.com', password='pass', is_staff=False)
+            User.objects.create_superuser(
+                email='admin@example.com', password='pass', is_staff=False)
 
     def test_create_superuser_without_is_superuser_raises_error(self):
         with self.assertRaises(ValueError):
-            User.objects.create_superuser(email='admin@example.com', password='pass', is_superuser=False)
+            User.objects.create_superuser(
+                email='admin@example.com', password='pass', is_superuser=False)
 
     def test_str_method_returns_email(self):
-        user = User.objects.create_user(email='strtest@example.com', password='pass')
+        user = User.objects.create_user(
+            email='strtest@example.com', password='pass')
         self.assertEqual(str(user), 'strtest@example.com')
 
     def test_username_max_length(self):
-        # username darf max 150 Zeichen haben
         username = 'u' * 151
         with self.assertRaises(ValidationError):
             user = User(username=username, email='a@b.com')
-            user.full_clean()  # ruft Validierung auf, die max_length prüft
+            user.full_clean()
 
     def test_required_fields(self):
-        # Email ist Pflichtfeld
         user = User(username='testuser')
         with self.assertRaises(ValidationError):
             user.full_clean()
 
-        # Username ist Pflichtfeld (unique=True), aber wird automatisch gesetzt, daher testen wir das
         user = User(email='test2@example.com')
         with self.assertRaises(ValidationError):
             user.full_clean()

@@ -7,11 +7,11 @@ from django.urls import reverse
 from django.contrib.sites.shortcuts import get_current_site
 from email.mime.image import MIMEImage
 
+
 def send_activation_email(user, request):
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = default_token_generator.make_token(user)
-    
-    # Frontend URL zur Login-Seite mit uid & token als Query-Parameter
+
     frontend_domain = "http://localhost:4200"
     activation_link = f"{frontend_domain}/login?uidb64={uid}&token={token}"
 
@@ -33,7 +33,7 @@ def send_activation_email(user, request):
 
     with open('./registration/templates/emails/Capa_1.png', 'rb') as f:
         logo = MIMEImage(f.read())
-        logo.add_header('Content-ID', '<logo_image>')  # cid im HTML verwenden
+        logo.add_header('Content-ID', '<logo_image>')
         msg.attach(logo)
 
     msg.send()

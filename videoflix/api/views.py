@@ -1,3 +1,4 @@
+import os
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
@@ -5,16 +6,13 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.exceptions import NotFound
 from rest_framework.exceptions import ValidationError
+from django.http import StreamingHttpResponse, HttpResponse, Http404
+from wsgiref.util import FileWrapper
+
 from .serializers import VideoUploadSerializer, VideoListSerializer, VideoDetailSerializer
 from ..models import Video, VideoProgress
 from .tasks import process_video
-from .functions import get_video_by_resolution, save_video_progress, get_video_progress
-import os
-from django.http import StreamingHttpResponse, HttpResponse, Http404
-from django.conf import settings
-from wsgiref.util import FileWrapper
-
-
+from .functions import get_video_by_resolution
 
 class VideoUploadView(APIView):
     permission_classes = [AllowAny]
@@ -33,10 +31,9 @@ class VideoUploadView(APIView):
 class VideoListView(APIView):
     def get(self, request):
         videos = Video.objects.all()
-        serializer = VideoListSerializer(videos, many=True, context={'request': request})
+        serializer = VideoListSerializer(
+            videos, many=True, context={'request': request})
         return Response(serializer.data)
-
-
 
 
 class VideoDetailView(APIView):
@@ -48,7 +45,6 @@ class VideoDetailView(APIView):
         except Video.DoesNotExist:
             return Response({'error': 'Video not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Lese query param 'resolution' aus
         requested_resolution = request.query_params.get('resolution')
 
         resolutions = ['180p', '360p', '720p', '1080p']
@@ -65,9 +61,8 @@ class VideoDetailView(APIView):
         if requested_resolution:
             key = f'video_{requested_resolution}'
             if key not in video_urls:
-                # Ungültige / nicht verfügbare Auflösung -> 400 Bad Request
-                raise ValidationError({'resolution': f'Die Auflösung {requested_resolution} ist nicht verfügbar.'})
-            # Nur diese Auflösung zurückgeben
+                raise ValidationError(
+                    {'resolution': f'Die Auflösung {requested_resolution} ist nicht verfügbar.'})
             data = {
                 'id': video.id,
                 'title': video.title,
@@ -87,23 +82,20 @@ class VideoDetailView(APIView):
             else:
                 default_resolution_key = next(iter(video_urls))
 
-            serializer = VideoDetailSerializer(video, context={'request': request})
+            serializer = VideoDetailSerializer(
+                video, context={'request': request})
             data = serializer.data
             data.update(video_urls)
 
             data['video_url'] = video_urls[default_resolution_key]
             data['resolution'] = default_resolution_key.replace('video_', '')
 
-        # Fortschritt ergänzen
         if request.user.is_authenticated:
-            progress = VideoProgress.objects.filter(user=request.user, video=video).first()
+            progress = VideoProgress.objects.filter(
+                user=request.user, video=video).first()
             data['last_position'] = progress.position_in_seconds if progress else 0
 
         return Response(data)
-
-
-
-
 
 
 class VideoProgressUpdateView(APIView):
@@ -113,7 +105,6 @@ class VideoProgressUpdateView(APIView):
         video_id = request.data.get('video_id')
         position = request.data.get('position_in_seconds')
 
-        # Prüfe explizit auf None, damit 0 auch erlaubt ist
         if video_id is None or position is None:
             return Response({'error': 'Missing required fields.'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -122,7 +113,6 @@ class VideoProgressUpdateView(APIView):
         except Video.DoesNotExist:
             return Response({'error': 'Video not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Fortschritt speichern oder aktualisieren
         VideoProgress.objects.update_or_create(
             user=request.user,
             video=video,
@@ -130,8 +120,6 @@ class VideoProgressUpdateView(APIView):
         )
 
         return Response({'detail': 'Progress saved.'}, status=status.HTTP_200_OK)
-
-
 
 
 class VideoStreamView(APIView):
@@ -153,12 +141,11 @@ class VideoStreamView(APIView):
 
         range_header = request.headers.get('Range', '').strip()
         if not range_header:
-            # Kein Range-Header – vollständige Datei liefern
-            response = StreamingHttpResponse(FileWrapper(open(file_path, 'rb')), content_type=content_type)
+            response = StreamingHttpResponse(FileWrapper(
+                open(file_path, 'rb')), content_type=content_type)
             response['Content-Length'] = str(file_size)
             return response
 
-        # Range-Header vorhanden – Teilstück zurückgeben
         try:
             range_type, range_spec = range_header.split('=')
             range_start, range_end = range_spec.split('-')
@@ -178,18 +165,19 @@ class VideoStreamView(APIView):
         response['Content-Length'] = str(length)
 
         return response
-    
+
 
 class ContinueWatchingView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        progresses = VideoProgress.objects.filter(user=request.user).select_related('video')
+        progresses = VideoProgress.objects.filter(
+            user=request.user).select_related('video')
         videos = [
             {
                 'id': p.video.id,
                 'title': p.video.title,
-                'img': request.build_absolute_uri(p.video.thumbnail.url),  # ✅ Fix hier
+                'img': request.build_absolute_uri(p.video.thumbnail.url),
                 'description': p.video.description,
                 'position_in_seconds': p.position_in_seconds,
             }

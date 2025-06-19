@@ -4,27 +4,32 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
+
 from .serializers import RegisterSerializer
 from .functions import send_activation_email
-from rest_framework.permissions import AllowAny
 
 User = get_user_model()
 
+
 class RegisterView(APIView):
     permission_classes = [AllowAny]
+
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
             send_activation_email(user, request)
             return Response(
-            {"message": "Please confirm your email address."},
-            status=status.HTTP_201_CREATED
+                {"message": "Please confirm your email address."},
+                status=status.HTTP_201_CREATED
             )
         return Response("Bitte überprüfe deine Eingaben und versuche es erneut.", status=status.HTTP_400_BAD_REQUEST)
 
+
 class ActivateAccountView(APIView):
     permission_classes = [AllowAny]
+
     def get(self, request, uidb64, token):
         try:
             uid = urlsafe_base64_decode(uidb64).decode()

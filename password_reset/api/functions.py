@@ -9,6 +9,7 @@ import logging
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
+
 def send_password_reset_email(email, request):
     print("send_password_reset_email wurde aufgerufen")
     if not email:
@@ -40,5 +41,4 @@ def send_password_reset_email(email, request):
 
     except User.DoesNotExist:
         logger.warning("Kein Benutzer gefunden mit E-Mail: %s", email)
-        # absichtlich keine Fehlermeldung zurückgeben (Datenschutz)
         pass

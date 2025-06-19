@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 class SetNewPasswordSerializer(serializers.Serializer):
     uid = serializers.CharField()
     token = serializers.CharField()
@@ -14,7 +15,8 @@ class SetNewPasswordSerializer(serializers.Serializer):
 
     def validate(self, data):
         if data["new_password"] != data["new_password_confirm"]:
-            raise serializers.ValidationError("Passwörter stimmen nicht überein.")
+            raise serializers.ValidationError(
+                "Passwörter stimmen nicht überein.")
 
         try:
             uid = urlsafe_base64_decode(data["uid"]).decode()
@@ -24,7 +26,8 @@ class SetNewPasswordSerializer(serializers.Serializer):
 
         token_generator = PasswordResetTokenGenerator()
         if not token_generator.check_token(user, data["token"]):
-            raise serializers.ValidationError("Ungültiger oder abgelaufener Token.")
+            raise serializers.ValidationError(
+                "Ungültiger oder abgelaufener Token.")
 
         data["user"] = user
         return data

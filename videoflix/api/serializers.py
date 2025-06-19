@@ -1,7 +1,8 @@
-# videoflix/api/serializers.py
 from rest_framework import serializers
+
 from ..models import Video, VideoProgress
 from .functions import get_video_by_resolution
+
 
 class VideoUploadSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,11 +10,11 @@ class VideoUploadSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'original_file', 'genre']
 
 
-
 class VideoListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Video
-        fields = ['id', 'title', 'description', 'thumbnail','upload_date', 'genre']
+        fields = ['id', 'title', 'description',
+                  'thumbnail', 'upload_date', 'genre']
 
 
 class VideoDetailSerializer(serializers.ModelSerializer):
@@ -55,22 +56,21 @@ class VideoDetailSerializer(serializers.ModelSerializer):
         return self._get_video_url(obj, '1080p')
 
     def get_resolution(self, obj):
-        # Default resolution (z.B. 720p)
         return '720p'
- 
+
     def get_video_url(self, obj):
-        # Default video URL, z.B. 720p
         request = self.context.get('request')
         video_file = get_video_by_resolution(obj, '720p')
         if video_file and hasattr(video_file, 'url'):
             return request.build_absolute_uri(video_file.url) if request else video_file.url
         return None
-    
+
     def get_last_position(self, obj):
         request = self.context.get('request')
         user = request.user if request else None
         if user and user.is_authenticated:
-            progress = VideoProgress.objects.filter(user=user, video=obj).first()
+            progress = VideoProgress.objects.filter(
+                user=user, video=obj).first()
             if progress:
                 return progress.position_in_seconds
         return 0

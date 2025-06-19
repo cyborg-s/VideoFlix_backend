@@ -1,7 +1,8 @@
 from rest_framework import serializers
-from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth import get_user_model
 
 User = get_user_model()
+
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -14,13 +15,16 @@ class LoginSerializer(serializers.Serializer):
         try:
             user_obj = User.objects.get(email=email)
         except User.DoesNotExist:
-            raise serializers.ValidationError({'non_field_errors': ["Invalid credentials."]})
+            raise serializers.ValidationError(
+                {'non_field_errors': ["Invalid credentials."]})
 
         if not user_obj.check_password(password):
-            raise serializers.ValidationError({'non_field_errors': ["Invalid credentials."]})
+            raise serializers.ValidationError(
+                {'non_field_errors': ["Invalid credentials."]})
 
         if not user_obj.is_active:
-            raise serializers.ValidationError({'non_field_errors': ["Email not confirmed."]})
+            raise serializers.ValidationError(
+                {'non_field_errors': ["Email not confirmed."]})
 
         data['user'] = user_obj
         return data

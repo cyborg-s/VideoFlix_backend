@@ -1,14 +1,17 @@
-from django.urls import reverse
+import pytest
 from rest_framework.test import APITestCase
 from rest_framework import status
+from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from .api.functions import send_password_reset_email  # Importiere deine Funktion
-import pytest
+
+from .api.functions import send_password_reset_email
+
 
 User = get_user_model()
+
 
 class PasswordResetTests(APITestCase):
     def setUp(self):
@@ -26,13 +29,14 @@ class PasswordResetTests(APITestCase):
         self.confirm_url = reverse('confirm-password-reset')
 
     def test_request_password_reset_active_user(self):
-        response = self.client.post(self.request_url, data={"email": self.user.email})
+        response = self.client.post(self.request_url, data={
+                                    "email": self.user.email})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("Folge dem Link", response.data.get("detail", ""))
 
     def test_request_password_reset_inactive_user(self):
-        # Für inaktive User wird kein Mail-Versand angestoßen, aber trotzdem 200 OK
-        response = self.client.post(self.request_url, data={"email": self.inactive_user.email})
+        response = self.client.post(self.request_url, data={
+                                    "email": self.inactive_user.email})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_request_password_reset_no_email(self):
@@ -52,7 +56,8 @@ class PasswordResetTests(APITestCase):
         }
         response = self.client.post(self.confirm_url, data=data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn("Passwort wurde erfolgreich geändert.", response.data.get("detail", ""))
+        self.assertIn("Passwort wurde erfolgreich geändert.",
+                      response.data.get("detail", ""))
         self.user.refresh_from_db()
         self.assertTrue(self.user.check_password("NewStrongPass1!"))
 

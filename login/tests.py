@@ -1,7 +1,7 @@
 from django.urls import reverse
+from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
 from rest_framework import status
-from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
 
 User = get_user_model()
@@ -9,7 +9,6 @@ User = get_user_model()
 
 class LoginTests(APITestCase):
     def setUp(self):
-        # Erstelle einen aktiven User
         self.user = User.objects.create_user(
             email='testuser@example.com',
             password='StrongPass123!',
@@ -19,7 +18,6 @@ class LoginTests(APITestCase):
         self.login_url = reverse('login:login')
         print("Login URL is:", self.login_url)
 
-        # User der nicht aktiv ist
         self.inactive_user = User.objects.create_user(
             email='inactive@example.com',
             password='StrongPass123!',
@@ -38,7 +36,6 @@ class LoginTests(APITestCase):
         self.assertEqual(response.data['email'], self.user.email)
         self.assertEqual(response.data['user_id'], self.user.id)
 
-        # Prüfe, ob Token in DB existiert
         token = Token.objects.filter(user=self.user).first()
         self.assertIsNotNone(token)
         self.assertEqual(response.data['token'], token.key)
@@ -50,7 +47,6 @@ class LoginTests(APITestCase):
         }
         response = self.client.post(self.login_url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        # oder Fehlerkey je nach Serializer
         self.assertIn('non_field_errors', response.data)
         self.assertIn('Invalid credentials', str(response.data))
 
@@ -73,4 +69,5 @@ class LoginTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         self.assertIn('non_field_errors', response.data)
-        self.assertIn('Email not confirmed.', response.data['non_field_errors'])
+        self.assertIn('Email not confirmed.',
+                      response.data['non_field_errors'])

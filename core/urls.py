@@ -23,15 +23,14 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('registration.api.urls')),
-    path('api/login/', include(('login.api.urls', 'login'),namespace='login')),
+    path('api/login/', include(('login.api.urls', 'login'), namespace='login')),
     path('api/validate-token/', include('user.api.urls')),
     path('api/video/', include('videoflix.api.urls')),
     path('api/password-reset/', include('password_reset.api.urls')),
     path('api/videoflix/', include('videoflix.api.urls')),
     path('django-rq/', include('django_rq.urls')),
-    
-]
 
+]
 
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
