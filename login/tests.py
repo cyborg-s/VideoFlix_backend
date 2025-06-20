@@ -1,4 +1,4 @@
-from django.urls import reverse
+from django.urls import reverse 
 from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
 from rest_framework import status
@@ -8,7 +8,16 @@ User = get_user_model()
 
 
 class LoginTests(APITestCase):
+    """
+    Test suite for the Login API endpoint.
+    Covers various scenarios including successful login, 
+    invalid credentials, and inactive users.
+    """
+
     def setUp(self):
+        """
+        Set up test users and the login URL before each test.
+        """
         self.user = User.objects.create_user(
             email='testuser@example.com',
             password='StrongPass123!',
@@ -26,6 +35,10 @@ class LoginTests(APITestCase):
         )
 
     def test_login_success(self):
+        """
+        Test login with correct credentials.
+        Ensures token and user details are returned upon success.
+        """
         data = {
             'email': 'testuser@example.com',
             'password': 'StrongPass123!'
@@ -41,6 +54,10 @@ class LoginTests(APITestCase):
         self.assertEqual(response.data['token'], token.key)
 
     def test_login_invalid_password(self):
+        """
+        Test login with incorrect password.
+        Expects a 400 Bad Request with appropriate error message.
+        """
         data = {
             'email': 'testuser@example.com',
             'password': 'WrongPassword'
@@ -51,6 +68,10 @@ class LoginTests(APITestCase):
         self.assertIn('Invalid credentials', str(response.data))
 
     def test_login_invalid_email(self):
+        """
+        Test login with non-existent email.
+        Expects a 400 Bad Request with appropriate error message.
+        """
         data = {
             'email': 'nonexistent@example.com',
             'password': 'AnyPass123!'
@@ -61,6 +82,10 @@ class LoginTests(APITestCase):
         self.assertIn('Invalid credentials', str(response.data))
 
     def test_login_inactive_user(self):
+        """
+        Test login with an inactive user account.
+        Expects a 400 Bad Request with email confirmation error.
+        """
         data = {
             'email': 'inactive@example.com',
             'password': 'StrongPass123!'

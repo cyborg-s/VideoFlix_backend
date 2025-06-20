@@ -1,16 +1,30 @@
+import logging
 from django.core.mail import send_mail
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.conf import settings
-import logging
+
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
 
 def send_password_reset_email(email, request):
+    """
+    Sends a password reset email to the user with the provided email address.
+
+    If the user exists and is active, a password reset token and UID are generated
+    and included in a link that is sent to the user's email address.
+
+    Args:
+        email (str): The email address of the user requesting a password reset.
+        request (HttpRequest): The HTTP request object, used for context if needed.
+
+    Returns:
+        None
+    """
     print("send_password_reset_email wurde aufgerufen")
     if not email:
         logger.warning("Keine E-Mail angegeben.")

@@ -5,10 +5,26 @@ User = get_user_model()
 
 
 class LoginSerializer(serializers.Serializer):
+    """
+    Serializer for user login. Validates user credentials and checks for active status.
+    """
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
+        """
+        Validates the provided email and password.
+        Ensures the user exists, the password is correct, and the account is active.
+        
+        Args:
+            data (dict): Dictionary containing 'email' and 'password'.
+
+        Returns:
+            dict: Validated data including the authenticated user.
+
+        Raises:
+            serializers.ValidationError: If the credentials are invalid or the account is inactive.
+        """
         email = data.get('email')
         password = data.get('password')
 

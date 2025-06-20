@@ -6,4 +6,4 @@ from .models import Video
 @receiver(post_save, sender=Video)
 def create_lecture(sender, instance, created, **kwargs):
     if created:
-        print('New object created')
+        pass

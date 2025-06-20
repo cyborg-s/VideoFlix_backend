@@ -5,8 +5,25 @@ from django_rq import job
 
 from .functions import convert_video, generate_thumbnail
 
+
 @job
 def process_video(video_id):
+    """
+    Background job to process an uploaded video by converting it to multiple resolutions
+    and generating a thumbnail image.
+
+    Args:
+        video_id (int): The primary key of the Video instance to process.
+
+    Process:
+        - Retrieves the Video object by ID.
+        - Extracts the original video file path and base filename.
+        - Converts the video into multiple resolutions (180p, 360p, 720p, 1080p),
+          saving each converted video file under the media directory in a resolution-specific folder.
+        - Generates a thumbnail image from the original video and saves it under the thumbnails folder.
+        - Updates the Video model instance fields for each resolution and the thumbnail path.
+        - Saves the updated Video instance.
+    """
     video = Video.objects.get(id=video_id)
     input_path = video.original_file.path
     base_filename = os.path.splitext(os.path.basename(input_path))[0]
