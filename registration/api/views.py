@@ -35,10 +35,14 @@ class RegisterView(APIView):
                 {"message": "Please confirm your email address."},
                 status=status.HTTP_201_CREATED
             )
-        return Response(
-            "Bitte überprüfe deine Eingaben und versuche es erneut.",
-            status=status.HTTP_400_BAD_REQUEST
-        )
+
+        errors = serializer.errors.copy()
+
+        # Wenn E-Mail-Fehler dabei ist, ersetzen wir diesen durch eine generische Nachricht
+        if 'email' in errors:
+            errors['email'] = ['Please check your inputs and try again.']
+
+        return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ActivateAccountView(APIView):
