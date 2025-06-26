@@ -32,7 +32,7 @@ class Video(models.Model):
     original_file = models.FileField(
         upload_to='videos/original/', max_length=255)
     thumbnail = models.ImageField(
-        upload_to='videos/thumbnails/', max_length=255)
+        upload_to='videos/thumbnails/', max_length=255 , null=True, blank=True)
 
     video_180p = models.FileField(
         upload_to='videos/180p/', null=True, blank=True, max_length=255)
