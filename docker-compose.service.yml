@@ -1,21 +1,6 @@
-version: '3.8'
+
 
 services:
-  worker:
-    build:
-      context: .
-      dockerfile: backend.Dockerfile
-    container_name: videoflix_worker
-    command: python manage.py rqworker default
-    env_file: .env
-    depends_on:
-      - db
-      - redis
-    volumes:
-      - .:/app
-      - videoflix_media:/app/media
-      - videoflix_static:/app/static
-
   mailhog:
     image: mailhog/mailhog
     container_name: videoflix_mailhog

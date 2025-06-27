@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import test_env_view
+
 
 
 urlpatterns = [
@@ -30,7 +30,6 @@ urlpatterns = [
     path('api/password-reset/', include('password_reset.api.urls')),
     path('api/videoflix/', include('videoflix.api.urls')),
     path('django-rq/', include('django_rq.urls')),
-    path("api/test-env/", test_env_view, name="test-env"),
 ]
 
 
