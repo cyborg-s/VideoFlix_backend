@@ -39,8 +39,8 @@ class RegisterView(APIView):
         errors = serializer.errors.copy()
 
         # Wenn E-Mail-Fehler dabei ist, ersetzen wir diesen durch eine generische Nachricht
-        if 'email' in errors:
-            errors['email'] = ['Please check your inputs and try again.']
+        # if 'email' in errors:
+        #     errors['email'] = ['Please check your inputs and try again.']   !!!!! AUSKOMMENTIERT MIT ABSICHT !!! in der checkliste steht kein rückschluss auf vohandene acc 
 
         return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
